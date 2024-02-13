@@ -44,12 +44,10 @@ impl SnakeGameViewModel {
             initial_location = (rng.gen_range(0..50), rng.gen_range(0..50));
         }
 
-        let initial_directions = vec![
-            Direction::Left,
+        let initial_directions = [Direction::Left,
             Direction::Up,
             Direction::Right,
-            Direction::Down,
-        ];
+            Direction::Down];
         let index = rng.gen_range(0..initial_directions.len()); // Generate a random index
         let initial_direction: Direction = initial_directions[index];
 
@@ -141,12 +139,10 @@ impl SnakeGameViewModel {
             initial_location = (rng.gen_range(0..50), rng.gen_range(0..50));
         }
 
-        let initial_directions = vec![
-            Direction::Left,
+        let initial_directions = [Direction::Left,
             Direction::Up,
             Direction::Right,
-            Direction::Down,
-        ];
+            Direction::Down];
         let index = rng.gen_range(0..initial_directions.len()); // Generate a random index
         let initial_direction: Direction = initial_directions[index];
 
@@ -171,7 +167,7 @@ impl SnakeGameViewModel {
     fn boost(&mut self) {
         if self.speed > 50 && self.boost_turns == 0 && self.score > 0 {
             self.boost_turns = 300;
-            self.speed = self.speed - 50;
+            self.speed -= 50;
         }
     }
 
@@ -185,17 +181,17 @@ impl SnakeGameViewModel {
             self.state = GameState::Lost;
         } else if self.dot == self.head {
             // Snake grows by one
-            self.score = self.score + 1;
+            self.score += 1;
             self.snake.push_front(self.head);
             self.available_spaces.remove(&self.head);
             // increase speed
             match self.score {
                 // speed: 100 -> 76 (-20)
                 // score: 0..30
-                score if score > 0 && score <= 30 && score % 5 == 0 => self.speed = self.speed - 4,
+                score if score > 0 && score <= 30 && score % 5 == 0 => self.speed -= 4,
                 // speed: 76 -> 51 (-25)
                 // score: 25..2500
-                score if score > 0 && score % 100 == 0 => self.speed = self.speed - 1,
+                score if score > 0 && score % 100 == 0 => self.speed -= 1,
                 _ => {}
             }
             if self.score == 2500 {
@@ -220,10 +216,10 @@ impl SnakeGameViewModel {
         match self.boost_turns {
             1 => {
                 self.boost_turns = 0;
-                self.speed = self.speed + 50;
+                self.speed += 50;
             }
             2..=300 => {
-                self.boost_turns = self.boost_turns - 1;
+                self.boost_turns -= 1;
             }
             _ => (),
         }
@@ -305,15 +301,15 @@ impl Display for Direction {
 
 impl Display for SnakeGameViewModel {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Head: ({}, {})\n", self.head.0, self.head.1)?;
+        writeln!(f, "Head: ({}, {})", self.head.0, self.head.1)?;
         write!(f, "Snake: [")?;
         for (x, y) in &self.snake {
             write!(f, "({}, {}), ", x, y)?;
         }
         write!(f, "]\nDot: ({}, {})\n", self.dot.0, self.dot.1)?;
-        write!(f, "Score: {}\n", self.score)?;
-        write!(f, "State: {}\n", self.state)?;
-        write!(f, "Direction: {}\n", self.direction)?;
+        writeln!(f, "Score: {}", self.score)?;
+        writeln!(f, "State: {}", self.state)?;
+        writeln!(f, "Direction: {}", self.direction)?;
         write!(f, "]")
     }
 }

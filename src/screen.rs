@@ -31,7 +31,7 @@ pub fn snake_screen(
     } else {
         vec![Color::Green, Color::Green]
     };
-    let boost_size = Rect {
+    let _boost_size = Rect {
         x: 0,
         y: 0,
         width: size.width,

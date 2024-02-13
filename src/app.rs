@@ -42,6 +42,6 @@ impl Application {
         self.view_model.handle_events()
     }
     fn ui(&mut self, frame: &mut Frame<'_>) {
-        snake_screen(frame, &self.view_model);
+        let _ = snake_screen(frame, &self.view_model);
     }
 }
