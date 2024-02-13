@@ -29,7 +29,8 @@ pub struct SnakeGameViewModel {
     pub state: GameState,
     pub direction: Direction,
     pub available_spaces: HashSet<(i16, i16)>,
-    speed: u64,
+    pub boost_turns: u16,
+    pub speed: u64,
 }
 
 impl SnakeGameViewModel {
@@ -70,6 +71,7 @@ impl SnakeGameViewModel {
             direction: initial_direction,
             available_spaces,
             speed: 100,
+            boost_turns: 0,
         }
     }
     pub fn handle_events(&mut self) -> io::Result<bool> {
@@ -108,6 +110,9 @@ impl SnakeGameViewModel {
                                 GameState::Paused => self.state = GameState::Playing,
                                 _ => (),
                             }
+                        }
+                        (KeyCode::Char('b'), _) => {
+                            self.boost();
                         }
                         (KeyCode::Enter, _) => {
                             if self.state != GameState::Playing {
@@ -160,6 +165,14 @@ impl SnakeGameViewModel {
         self.state = GameState::Playing;
         self.direction = initial_direction;
         self.available_spaces = available_spaces;
+        self.speed = 100;
+        self.boost_turns = 0;
+    }
+    fn boost(&mut self) {
+        if self.speed > 50 && self.boost_turns == 0 && self.score > 0 {
+            self.boost_turns = 300;
+            self.speed = self.speed - 50;
+        }
     }
 
     fn update_game(&mut self) {
@@ -176,8 +189,16 @@ impl SnakeGameViewModel {
             self.snake.push_front(self.head);
             self.available_spaces.remove(&self.head);
             // increase speed
-            self.speed = self.speed - 2;
-            if self.score == 50 {
+            match self.score {
+                // speed: 100 -> 76 (-20)
+                // score: 0..30
+                score if score > 0 && score <= 30 && score % 5 == 0 => self.speed = self.speed - 4,
+                // speed: 76 -> 51 (-25)
+                // score: 25..2500
+                score if score > 0 && score % 100 == 0 => self.speed = self.speed - 1,
+                _ => {}
+            }
+            if self.score == 2500 {
                 self.state = GameState::Won;
             } else {
                 let new_point = self.get_random_point_from_set();
@@ -195,6 +216,16 @@ impl SnakeGameViewModel {
             if let Some(space) = tail {
                 self.available_spaces.insert(space);
             }
+        }
+        match self.boost_turns {
+            1 => {
+                self.boost_turns = 0;
+                self.speed = self.speed + 50;
+            }
+            2..=300 => {
+                self.boost_turns = self.boost_turns - 1;
+            }
+            _ => (),
         }
     }
     fn get_random_point_from_set(&mut self) -> Option<(i16, i16)> {

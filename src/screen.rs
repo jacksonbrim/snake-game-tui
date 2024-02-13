@@ -1,9 +1,13 @@
 use ratatui::widgets::{canvas::Canvas, canvas::Rectangle};
 use ratatui::{prelude::*, widgets::*};
+use tui_big_text::{BigTextBuilder, PixelSize};
 
 use crate::game::{GameState, SnakeGameViewModel};
 
-pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
+pub fn snake_screen(
+    frame: &mut Frame,
+    model: &SnakeGameViewModel,
+) -> Result<(), Box<dyn std::error::Error>> {
     let size = frame.size();
     let snake_cells = model.snake.iter().cloned().collect::<Vec<_>>();
     let head_cell = model.head;
@@ -22,8 +26,37 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
         height: size.height / 9,
     };
     let score_string = format!("Score: {}", model.score);
+    let snake_color = if model.boost_turns > 0 {
+        vec![Color::Red, Color::Yellow]
+    } else {
+        vec![Color::Green, Color::Green]
+    };
+    let boost_size = Rect {
+        x: 0,
+        y: 0,
+        width: size.width,
+        height: size.height / 9,
+    };
+
+    let boost_message = BigTextBuilder::default()
+        .pixel_size(PixelSize::HalfWidth)
+        .lines(vec![
+            Line::from(vec![
+                Span::styled("Red", Style::new().red()),
+                Span::raw(" And "),
+                Span::styled("Yellow", Style::new().yellow()),
+            ]),
+            Line::from(vec![
+                Span::styled("Kill", Style::new().red()),
+                Span::raw(" A "),
+                Span::styled("Fellow", Style::new().yellow()),
+            ]),
+        ])
+        .build()?;
+
     let pause_message = Span::raw("Press <SpaceBar> to Pause / Unpause.");
     let move_instructions = Span::raw("To move, use the arrow keys. Alternatively, use 'k'/'j' for up/down, and 'h'/'l' for left and right.");
+    let boost = Span::raw("For a temporary boost, press 'b'.");
     let speed_up = Span::raw(
         "To temporarily speed up the snake, enter Ctrl+<Direction> to move twice as fast.",
     );
@@ -31,6 +64,7 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
     let text = vec![
         Line::from(pause_message),
         Line::from(move_instructions),
+        Line::from(boost),
         Line::from(speed_up),
     ];
 
@@ -40,6 +74,7 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
         .wrap(Wrap { trim: true });
     // Create a canvas for the game grid
     let canvas = Canvas::default()
+        .background_color(Color::DarkGray)
         .block(
             Block::default()
                 .borders(Borders::ALL)
@@ -48,13 +83,13 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
         )
         .paint(|ctx| {
             // Draw the snake body
-            for &cell in &snake_cells {
+            for (idx, cell) in snake_cells.iter().enumerate() {
                 ctx.draw(&Rectangle {
                     x: cell.0 as f64,
                     y: cell.1 as f64,
                     width: 1.0,
                     height: 1.0,
-                    color: Color::Green,
+                    color: snake_color[idx % 2],
                 });
             }
             // Draw the snake head
@@ -63,7 +98,7 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
                 y: head_cell.1 as f64,
                 width: 1.0,
                 height: 1.0,
-                color: Color::Green,
+                color: snake_color[0],
             });
             // Paint the dot
             ctx.draw(&Rectangle {
@@ -80,12 +115,16 @@ pub fn snake_screen(frame: &mut Frame, model: &SnakeGameViewModel) {
     // Check the game state and render accordingly
     match model.state {
         GameState::Playing => {
+            if model.boost_turns > 0 {
+                frame.render_widget(boost_message, popup_size);
+            }
             frame.render_widget(canvas, popup_size);
             frame.render_widget(game_instructions, shortcuts_size);
         }
         GameState::Won | GameState::Lost => game_over_screen(frame, model, size),
         GameState::Paused => pause_screen(frame, model, size),
     }
+    Ok(())
 }
 
 fn pause_screen(frame: &mut Frame, model: &SnakeGameViewModel, size: Rect) {
