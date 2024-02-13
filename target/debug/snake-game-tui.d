@@ -1,1 +1,0 @@
-/home/gracklejacks/snake-game-tui/target/debug/snake-game-tui: /home/gracklejacks/snake-game-tui/src/app.rs /home/gracklejacks/snake-game-tui/src/game.rs /home/gracklejacks/snake-game-tui/src/main.rs /home/gracklejacks/snake-game-tui/src/screen.rs
