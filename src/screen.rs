@@ -2,11 +2,11 @@ use ratatui::widgets::{canvas::Canvas, canvas::Rectangle};
 use ratatui::{prelude::*, widgets::*};
 use tui_big_text::{BigTextBuilder, PixelSize};
 
-use crate::game::{GameState, SnakeGameViewModel};
+use crate::game::{GameState, SnakeGameModel};
 
 pub fn snake_screen(
     frame: &mut Frame,
-    model: &SnakeGameViewModel,
+    model: &SnakeGameModel,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let size = frame.size();
     let snake_cells = model.snake.iter().cloned().collect::<Vec<_>>();
@@ -127,7 +127,7 @@ pub fn snake_screen(
     Ok(())
 }
 
-fn pause_screen(frame: &mut Frame, model: &SnakeGameViewModel, size: Rect) {
+fn pause_screen(frame: &mut Frame, model: &SnakeGameModel, size: Rect) {
     let pause_message = Span::raw("Game Paused. Press <SpaceBar> to unpause.");
     let score_message = Span::raw(format!("Current Score: {}", model.score));
 
@@ -150,7 +150,7 @@ fn pause_screen(frame: &mut Frame, model: &SnakeGameViewModel, size: Rect) {
     frame.render_widget(paragraph, popup_size);
 }
 
-fn game_over_screen(frame: &mut Frame, model: &SnakeGameViewModel, size: Rect) {
+fn game_over_screen(frame: &mut Frame, model: &SnakeGameModel, size: Rect) {
     let message = match model.state {
         GameState::Won => "Congratulations! You won!",
         GameState::Lost => "Game Over! Try again!",

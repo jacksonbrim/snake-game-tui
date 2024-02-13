@@ -21,7 +21,7 @@ pub enum Direction {
     Down,
 }
 #[derive(Debug)]
-pub struct SnakeGameViewModel {
+pub struct SnakeGameModel {
     pub head: (i16, i16),
     pub snake: VecDeque<(i16, i16)>,
     pub dot: (i16, i16),
@@ -33,7 +33,7 @@ pub struct SnakeGameViewModel {
     pub speed: u64,
 }
 
-impl SnakeGameViewModel {
+impl SnakeGameModel {
     pub fn new() -> Self {
         let mut rng = thread_rng();
 
@@ -44,10 +44,12 @@ impl SnakeGameViewModel {
             initial_location = (rng.gen_range(0..50), rng.gen_range(0..50));
         }
 
-        let initial_directions = [Direction::Left,
+        let initial_directions = [
+            Direction::Left,
             Direction::Up,
             Direction::Right,
-            Direction::Down];
+            Direction::Down,
+        ];
         let index = rng.gen_range(0..initial_directions.len()); // Generate a random index
         let initial_direction: Direction = initial_directions[index];
 
@@ -60,7 +62,7 @@ impl SnakeGameViewModel {
             }
         }
 
-        SnakeGameViewModel {
+        SnakeGameModel {
             head: initial_location,
             snake: VecDeque::new(),
             dot: initial_dot,
@@ -139,10 +141,12 @@ impl SnakeGameViewModel {
             initial_location = (rng.gen_range(0..50), rng.gen_range(0..50));
         }
 
-        let initial_directions = [Direction::Left,
+        let initial_directions = [
+            Direction::Left,
             Direction::Up,
             Direction::Right,
-            Direction::Down];
+            Direction::Down,
+        ];
         let index = rng.gen_range(0..initial_directions.len()); // Generate a random index
         let initial_direction: Direction = initial_directions[index];
 
@@ -299,7 +303,7 @@ impl Display for Direction {
     }
 }
 
-impl Display for SnakeGameViewModel {
+impl Display for SnakeGameModel {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         writeln!(f, "Head: ({}, {})", self.head.0, self.head.1)?;
         write!(f, "Snake: [")?;
