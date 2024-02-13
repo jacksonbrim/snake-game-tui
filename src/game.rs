@@ -101,7 +101,7 @@ impl SnakeGameViewModel {
                             self.right();
                         }
                         (KeyCode::Char('l') | KeyCode::Right, _) => self.right(),
-                        (KeyCode::Char('p'), KeyModifiers::CONTROL) => {
+                        (KeyCode::Char(' '), _) => {
                             // navigate stack up
                             match self.state {
                                 GameState::Playing => self.state = GameState::Paused,
