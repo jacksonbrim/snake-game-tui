@@ -15,7 +15,7 @@ A minimalist, terminal-based Snake game in Rust, leveraging the `ratatui` crate 
 Clone the repository and run the game using Cargo:
 
 ```sh
-git clone https://your-repository-url/terminal-snake-game.git
+git clone https://github.com/jacksonbrim/snake-game-tui.git
 cd terminal-snake-game
 cargo run
 ```
