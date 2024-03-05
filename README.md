@@ -1,6 +1,7 @@
 # Rust Terminal Snake Game
 
-https://github.com/jacksonbrim/snake-game-tui/assets/9915390/39ba4788-cbe5-4cfc-bd43-f259718b646a
+![snake_screencap_3_5x](https://github.com/jacksonbrim/snake-game-tui/assets/9915390/f85f7d75-82b1-495c-a154-90ab87f0808f)
+
 
 ## Overview
 A minimalist, terminal-based Snake game in Rust, leveraging the `ratatui` crate for the user interface and designed with MVC architecture. Originally an easter egg within another TUI project's loading page, this game provides a nostalgic Snake gameplay directly in your terminal.
